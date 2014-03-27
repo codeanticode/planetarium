@@ -383,7 +383,8 @@ public class Dome extends PGraphics3D {
   
   private void renderDome() {
     renderBorder();
-    ortho();    
+    camera(0, 0, resolution * 0.5f + domeDZ, 0, 0, 0, 0, 1, 0);
+    ortho(-width/2, width/2, -height/2, height/2);
     resetMatrix();    
     translate(domeDX, domeDY, domeDZ);
     scale(domeScale);      
