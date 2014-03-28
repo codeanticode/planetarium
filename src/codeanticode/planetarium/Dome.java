@@ -404,6 +404,11 @@ public class Dome extends PGraphics3D {
   
   private void renderDome() {
     renderBorder();
+    
+    // This setting might be better for 2.1.2+:
+//    camera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
+//    ortho(-width/2, width/2, -height/2, height/2);
+    
     camera();
     ortho(domeLeft, domeRight, domeBottom, domeTop);
     resetMatrix();    
