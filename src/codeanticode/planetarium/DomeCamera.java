@@ -21,6 +21,11 @@ public class DomeCamera {
     renderer.domeRendering(false);
   }
   
+  public void ortho(float left, float right,
+                    float bottom, float top) {
+    renderer.setOrthoParams(left, right, bottom, top);    
+  }
+  
   public void translate(float tx, float ty, float tz) {
     renderer.setOrigin(tx, ty, tz);
   }

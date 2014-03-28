@@ -68,10 +68,12 @@ public class Dome extends PGraphics3D {
   protected boolean requestedRenderDomeChange = false;
   protected boolean requestedRenderDome;  
   
+  protected float domeLeft, domeRight, domeTop, domeBottom;
   protected float domeDX, domeDY, domeDZ;
   protected float domeScale = 1;  
   
-  protected Method borderMethod;  
+  protected Method borderMethod;
+  protected Method screenMethod; 
   
 	/**
 	 * The default constructor.
@@ -79,7 +81,7 @@ public class Dome extends PGraphics3D {
 	 */
 	public Dome() {
 		super();
-		welcome();		
+		welcome();
 	}
 	
 	
@@ -109,6 +111,11 @@ public class Dome extends PGraphics3D {
       borderMethod = parent.getClass().getMethod("border", new Class[] {});
     } catch (Exception e) {
     }    
+
+    try {
+      screenMethod = parent.getClass().getMethod("screen", new Class[] {});
+    } catch (Exception e) {
+    }    
   }
   
   
@@ -128,6 +135,10 @@ public class Dome extends PGraphics3D {
       resolution = iwidth;  
       offsetX = offsetY = 0;
     }    
+    domeLeft = 0; 
+    domeRight = iwidth;
+    domeBottom = 0;
+    domeTop = iheight;    
     super.setSize(iwidth, iheight);
   }
   
@@ -204,14 +215,18 @@ public class Dome extends PGraphics3D {
 	    }	    
 	    requestedRenderDomeChange = false;
 	  }
-	  
+	  	  
 	  if (renderDome && 0 < parent.frameCount) {	  
 	    if (!cubeMapInit) {
 	      initDome();
 	    }
-	    
+
 	    beginPGL();
-	    
+             
+      pgl.activeTexture(PGL.TEXTURE1);
+      pgl.enable(PGL.TEXTURE_CUBE_MAP);
+      pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, cubeMapTex.get(0));     
+      
 	    // bind fbo
 	    pgl.bindFramebuffer(PGL.FRAMEBUFFER, cubeMapFbo.get(0));   
 	    
@@ -230,16 +245,26 @@ public class Dome extends PGraphics3D {
       // Draw the rest of the cubemap faces
       for (int face = PGL.TEXTURE_CUBE_MAP_NEGATIVE_X; 
                face <= PGL.TEXTURE_CUBE_MAP_POSITIVE_Z; face++) {
-        beginFaceDraw(face);    
+        beginFaceDraw(face);
         parent.draw();
         endFaceDraw();      
       }
-      
+    
       endPGL();
-      
       renderDome();
-    }    
+      pgl.disable(PGL.TEXTURE_CUBE_MAP);
+      pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, 0);
+      
+    }
     super.endDraw();    
+  }
+  
+  
+  protected void setOrthoParams(float left, float right, float bottom, float top) {
+    domeLeft = left; 
+    domeRight = right;
+    domeBottom = bottom;
+    domeTop = top;    
   }
   
   
@@ -334,10 +359,6 @@ public class Dome extends PGraphics3D {
       // Attach depth buffer to FBO
       pgl.framebufferRenderbuffer(PGL.FRAMEBUFFER, PGL.DEPTH_ATTACHMENT, 
                                   PGL.RENDERBUFFER, cubeMapRbo.get(0));    
-
-      pgl.enable(PGL.TEXTURE_CUBE_MAP);
-      pgl.activeTexture(PGL.TEXTURE1);
-      pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, cubeMapTex.get(0));     
       
       endPGL();
       
@@ -383,8 +404,8 @@ public class Dome extends PGraphics3D {
   
   private void renderDome() {
     renderBorder();
-    camera(0, 0, resolution * 0.5f + domeDZ, 0, 0, 0, 0, 1, 0);
-    ortho(-width/2, width/2, -height/2, height/2);
+    camera();
+    ortho(domeLeft, domeRight, domeBottom, domeTop);
     resetMatrix();    
     translate(domeDX, domeDY, domeDZ);
     scale(domeScale);      
@@ -395,6 +416,7 @@ public class Dome extends PGraphics3D {
       shape(domeSphere);
       resetShader();      
     }
+    renderScreen();
   }
   
   
@@ -402,6 +424,16 @@ public class Dome extends PGraphics3D {
     if (borderMethod != null) {
       try {
         borderMethod.invoke(parent, new Object[] {});
+      } catch (Exception e) {
+        e.printStackTrace();
+      }      
+    }    
+  }
+  
+  private void renderScreen() {
+    if (screenMethod != null) {
+      try {
+        screenMethod.invoke(parent, new Object[] {});
       } catch (Exception e) {
         e.printStackTrace();
       }      
