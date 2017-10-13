@@ -48,8 +48,10 @@ public class Dome extends PGraphics3D {
   public final static int GRID     = 1;	
   
   protected PShader cubeMapShader;
+  protected PShader cubeMapQuadShader;
   protected PShape domeSphere;
   protected PShape gridSphere;
+  protected PShape domeQuad;
 
   protected int resolution;
   protected int offsetX, offsetY;
@@ -61,8 +63,9 @@ public class Dome extends PGraphics3D {
   protected boolean cubeMapInit = false;
   protected int cubeMapSize = 1024;
   
-  protected boolean renderDome = true;
-  protected boolean renderGrid = false;
+  protected boolean renderDomeQuad = true;
+  //protected boolean renderDome = true;
+  //protected boolean renderGrid = false;
   protected int currentFace;
   
   protected boolean requestedRenderDomeChange = false;
@@ -204,8 +207,9 @@ public class Dome extends PGraphics3D {
 	  super.beginDraw();
 	  
 	  if (requestedRenderDomeChange) {
-	    renderDome = requestedRenderDome;
-	    if (renderDome) {
+	    //renderDome = requestedRenderDome;
+	    renderDomeQuad = requestedRenderDome;
+	    if (renderDomeQuad) {
 	      background(0xffCCCCCC);
 	    } else { 
 	      // go back to default camera and perspective
@@ -216,9 +220,11 @@ public class Dome extends PGraphics3D {
 	    requestedRenderDomeChange = false;
 	  }
 	  	  
-	  if (renderDome && 0 < parent.frameCount) {	  
+	  //if (renderDome && 0 < parent.frameCount) {	  
+	  if (renderDomeQuad && 0 < parent.frameCount) {
 	    if (!cubeMapInit) {
-	      initDome();
+	      //initDome();
+	      initDomeQuad();
 	    }
 
 	    beginPGL();
@@ -239,7 +245,8 @@ public class Dome extends PGraphics3D {
 
 	
   public void endDraw() {
-    if (renderDome && 0 < parent.frameCount) {
+    //if (renderDome && 0 < parent.frameCount) {
+    if (renderDomeQuad && 0 < parent.frameCount) {
       endFaceDraw();
 
       // Draw the rest of the cubemap faces
@@ -251,7 +258,8 @@ public class Dome extends PGraphics3D {
       }
     
       endPGL();
-      renderDome();
+      //renderDome();
+      renderDomeQuad();
       pgl.disable(PGL.TEXTURE_CUBE_MAP);
       pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, 0);
       
@@ -281,17 +289,18 @@ public class Dome extends PGraphics3D {
   
   
   protected void domeRendering(boolean value) {
-    if (renderDome != value) {
+    //if (renderDome != value) {
+    	if (renderDomeQuad != value) {
       requestedRenderDomeChange = true;
       requestedRenderDome = value;  
     }
   }
   
-  
+  /*
   protected void renderGrid(boolean value) {
     renderGrid = value;
   }  
-  
+  */
   
   protected int getCurrentFace() {
     return currentFace;
@@ -366,6 +375,75 @@ public class Dome extends PGraphics3D {
     }
   }
   
+  private void initDomeQuad() {
+	    if (domeQuad == null) {
+	    		domeQuad = createShape();
+		    	domeQuad.beginShape();
+		    	domeQuad.fill(255,255,0);
+		    	domeQuad.textureMode(NORMAL);
+	    	    domeQuad.noStroke();
+	    	    domeQuad.vertex(0, 0, 0, 0, 0);
+	    	    domeQuad.vertex(300, 0, 0, 1, 0);
+	    	    domeQuad.vertex(300, 300, 0, 1, 1);
+	    	    domeQuad.vertex(0, 300, 0, 0, 1);
+	    	    domeQuad.endShape();
+	    }
+	    	    
+	    if (cubeMapQuadShader == null) {    
+	      cubeMapQuadShader = parent.loadShader("cubeMapQuadFrag.glsl", 
+	                                        "cubeMapQuadVert.glsl"); 
+	      cubeMapQuadShader.set("cubemap", 1);
+	    }
+	    
+	    
+	    if (!cubeMapInit) {
+	      PGL pgl = beginPGL();
+	      
+	      cubeMapSize = PApplet.min(nextPowerOfTwo(resolution), maxTextureSize);
+	      
+	      cubeMapTex = IntBuffer.allocate(1);
+	      pgl.genTextures(1, cubeMapTex);
+	      pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, cubeMapTex.get(0));
+	      pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_S, 
+	                        PGL.CLAMP_TO_EDGE);
+	      pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_T, 
+	                        PGL.CLAMP_TO_EDGE);
+	      pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_R, PGL.CLAMP_TO_EDGE);
+	      pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MIN_FILTER, 
+	                        PGL.NEAREST);
+	      pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MAG_FILTER, 
+	                        PGL.NEAREST);
+	      for (int i = PGL.TEXTURE_CUBE_MAP_POSITIVE_X; i < 
+	                   PGL.TEXTURE_CUBE_MAP_POSITIVE_X + 6; i++) {
+	        pgl.texImage2D(i, 0, PGL.RGBA8, cubeMapSize, cubeMapSize, 0, 
+	                       PGL.RGBA, PGL.UNSIGNED_BYTE, null);
+	      }
+	      
+	      // Init fbo, rbo
+	      cubeMapFbo = IntBuffer.allocate(1);
+	      cubeMapRbo = IntBuffer.allocate(1);
+	      pgl.genFramebuffers(1, cubeMapFbo);
+	      pgl.bindFramebuffer(PGL.FRAMEBUFFER, cubeMapFbo.get(0));
+	      pgl.framebufferTexture2D(PGL.FRAMEBUFFER, PGL.COLOR_ATTACHMENT0, 
+	                               PGL.TEXTURE_CUBE_MAP_POSITIVE_X, 
+	                               cubeMapTex.get(0), 0);
+
+	      pgl.genRenderbuffers(1, cubeMapRbo);
+	      pgl.bindRenderbuffer(PGL.RENDERBUFFER, cubeMapRbo.get(0));
+	      pgl.renderbufferStorage(PGL.RENDERBUFFER, PGL.DEPTH_COMPONENT24, 
+	                              cubeMapSize, cubeMapSize);
+	      
+	      // Attach depth buffer to FBO
+	      pgl.framebufferRenderbuffer(PGL.FRAMEBUFFER, PGL.DEPTH_ATTACHMENT, 
+	                                  PGL.RENDERBUFFER, cubeMapRbo.get(0));    
+	      
+	      endPGL();
+	      
+	      cubeMapInit = true;
+	    }
+	  }
+	  
+	  
   
   private void beginFaceDraw(int face) {
     currentFace = face; 
@@ -401,7 +479,7 @@ public class Dome extends PGraphics3D {
                              currentFace, 0, 0);
   }
 
-  
+/*  
   private void renderDome() {
     renderBorder();
     
@@ -423,7 +501,26 @@ public class Dome extends PGraphics3D {
     }
     renderScreen();
   }
-  
+  */
+  private void renderDomeQuad() {
+	    renderBorder();
+	    
+	    //This setting might be better for 2.1.2+:
+	    //camera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
+	    //ortho(-width/2, width/2, -height/2, height/2);
+	    /*
+	    camera();
+	    ortho(domeLeft, domeRight, domeBottom, domeTop);
+	    resetMatrix();    
+	    translate(domeDX, domeDY, domeDZ);
+	    scale(domeScale);      
+	    shader(cubeMapQuadShader);
+	    */
+	    resetMatrix();    
+	    shape(domeQuad);
+	    resetShader();      
+	    renderScreen();
+	  }
   
   private void renderBorder() {
     if (borderMethod != null) {
