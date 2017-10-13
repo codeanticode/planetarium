@@ -42,7 +42,7 @@ import processing.opengl.PShader;
  */
 public class Dome extends PGraphics3D {
   public final static String RENDERER = "codeanticode.planetarium.Dome";	
-	public final static String VERSION  = "##library.prettyVersion##";
+  public final static String VERSION  = "##library.prettyVersion##";
 
   public final static int NORMAL   = 0;
   public final static int GRID     = 1;	
@@ -300,13 +300,13 @@ public class Dome extends PGraphics3D {
   
   private void initDome() {
     if (domeSphere == null) {
-      domeSphere = createShape(SPHERE, resolution * 0.5f, 50, 50);
+      domeSphere = createShape(SPHERE, resolution * 0.5f);
       domeSphere.rotateX(HALF_PI);
       domeSphere.setStroke(false);
     }
     
     if (gridSphere == null) {
-      gridSphere = createShape(SPHERE, resolution * 0.5f, 25, 25);
+      gridSphere = createShape(SPHERE, resolution * 0.5f);
       gridSphere.rotateX(HALF_PI);
       gridSphere.setFill(0xFF000000);
       gridSphere.setStroke(0xFFFFFFFF);      
@@ -405,9 +405,9 @@ public class Dome extends PGraphics3D {
   private void renderDome() {
     renderBorder();
     
-    // This setting might be better for 2.1.2+:
-//    camera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
-//    ortho(-width/2, width/2, -height/2, height/2);
+    //This setting might be better for 2.1.2+:
+    //camera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
+    //ortho(-width/2, width/2, -height/2, height/2);
     
     camera();
     ortho(domeLeft, domeRight, domeBottom, domeTop);
