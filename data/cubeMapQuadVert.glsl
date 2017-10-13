@@ -1,3 +1,6 @@
+precision highp float;
+precision highp int;
+
 uniform mat4 transform;
 uniform mat4 modelview;
 uniform mat3 normalMatrix;
