@@ -43,13 +43,11 @@ public class DomeCamera {
   }
   
   public void setMode(int mode) {
-	  /*
     if (mode == Dome.NORMAL) {
       renderer.renderGrid(false);
     } else if (mode == Dome.GRID) {
       renderer.renderGrid(true);
     }
-    */
   }
   
   public void setDomeAperture(float theAperture) {

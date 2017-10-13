@@ -18,9 +18,14 @@ import codeanticode.planetarium.*;
 
 float cubeX, cubeY, cubeZ;
 
+DomeCamera dc;
+int gridMode = Dome.NORMAL;
+
 void setup() {
   // For the time being, only use square windows  
-  size(600, 600, Dome.RENDERER);
+  size(1024, 1024, Dome.RENDERER);
+  
+  dc = new DomeCamera(this);
 }
 
 // Called one time per frame.
@@ -36,7 +41,7 @@ void draw() {
   background(0);
   
   pushMatrix();  
-  translate(width/2, height/2, 300);
+  translate(width/2, height/2, -300);
   
   lights();
   
@@ -56,9 +61,18 @@ void draw() {
   popMatrix();
 }
 
+void mouseDragged() {
+  //exaggerating dome aperture. 1f <=> 180°
+  dc.setDomeAperture(map(mouseY,0,height,0.1f,4f));
+}
+
 void keyPressed() {
   if (key == CODED) {
     if (keyCode == UP) cubeZ -= 5;
     else if (keyCode == DOWN) cubeZ += 5;
-  }  
+  }
+  if (key == ' ') {
+    gridMode = gridMode == Dome.GRID ? Dome.NORMAL : Dome.GRID;
+    dc.setMode(gridMode);
+  }
 }

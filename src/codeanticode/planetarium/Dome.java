@@ -70,6 +70,7 @@ public class Dome extends PGraphics3D {
   protected float domeDX, domeDY, domeDZ;
   protected float domeScale = 1;  
   protected float domeAperture = 1f;
+  protected float renderGrid = 0f;
   
   protected Method borderMethod;
   protected Method screenMethod; 
@@ -292,11 +293,16 @@ public class Dome extends PGraphics3D {
     }
   }
   
-  /*
   protected void renderGrid(boolean value) {
-    renderGrid = value;
+    renderGrid = value ? 1f : 0f;
+    if(cubeMapQuadShader != null) {
+	    	try {
+	    		cubeMapQuadShader.set("renderGrid", renderGrid);
+	    	} catch(Exception e) {
+	    		e.printStackTrace();
+	    	}
+    	}
   }  
-  */
   
   protected int getCurrentFace() {
     return currentFace;
