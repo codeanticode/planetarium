@@ -52,6 +52,10 @@ public class DomeCamera {
     */
   }
   
+  public void setDomeAperture(float theAperture) {
+	  renderer.setDomeAperture(theAperture);
+  }
+  
   public int getFace() {
     return renderer.getCurrentFace() - PGL.TEXTURE_CUBE_MAP_POSITIVE_X;
   }

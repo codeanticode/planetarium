@@ -4,6 +4,7 @@ precision highp float;
 precision highp int;
 
 uniform samplerCube cubemap;
+uniform float aperture;
 
 varying vec2 vertTexCoord;
 
@@ -29,7 +30,7 @@ vec3 domeXYToXYZ(vec2 xy, float aperture) {
 }
 
 void main() {
-  vec3 ray = domeXYToXYZ(vertTexCoord, 1.0*PI);
+  vec3 ray = domeXYToXYZ(vertTexCoord, aperture*PI);
   //vec3 rgb = ray * 0.5 + vec3(0.5); //DEBUG
   vec3 color = vec3(textureCube(cubemap, ray));
   gl_FragColor = vec4(color, 1.0);

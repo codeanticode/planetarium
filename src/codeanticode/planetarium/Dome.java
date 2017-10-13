@@ -69,6 +69,7 @@ public class Dome extends PGraphics3D {
   protected float domeLeft, domeRight, domeTop, domeBottom;
   protected float domeDX, domeDY, domeDZ;
   protected float domeScale = 1;  
+  protected float domeAperture = 1f;
   
   protected Method borderMethod;
   protected Method screenMethod; 
@@ -320,6 +321,7 @@ public class Dome extends PGraphics3D {
 	      cubeMapQuadShader = parent.loadShader("cubeMapQuadFrag.glsl", 
 	                                        "cubeMapQuadVert.glsl"); 
 	      cubeMapQuadShader.set("cubemap", 1);
+	      setDomeAperture(1f);
 	    }
 	    
 	    
@@ -453,6 +455,18 @@ public class Dome extends PGraphics3D {
       ret <<= 1;
     }
     return ret;
+  }
+  
+  //the aperture value is normalized on PI
+  protected void setDomeAperture(float theAperture) {
+    if(cubeMapQuadShader != null) {
+	    	try {
+	    		cubeMapQuadShader.set("aperture", theAperture);
+	    		domeAperture = theAperture;
+	    	} catch(Exception e) {
+	    		e.printStackTrace();
+	    	}    		
+    }
   }
   
   
