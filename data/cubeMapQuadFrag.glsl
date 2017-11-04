@@ -50,9 +50,9 @@ vec3 getLongtitudeGrid(vec2 longLat, float gratOffset, float gratWidth, vec3 gra
 
 vec3 getGrid(vec2 longLat, vec3 colour, float gratOffset0, float gratWidth0, float gratOffset1, float gratWidth1) {
 	vec3 longGrid_0 = getLongtitudeGrid(longLat, gratOffset0, gratWidth0, colour);
-  vec3 longGrid_1 = getLongtitudeGrid(longLat, gratOffset1, gratWidth1, colour);
+  	vec3 longGrid_1 = getLongtitudeGrid(longLat, gratOffset1, gratWidth1, colour);
 	vec3 latGrid_0 = getLatitudeGrid(longLat, gratOffset0, gratWidth0, colour);
-  vec3 latGrid_1 = getLatitudeGrid(longLat, gratOffset1, gratWidth1, colour);
+  	vec3 latGrid_1 = getLatitudeGrid(longLat, gratOffset1, gratWidth1, colour);
 	vec3 grid_rgb = longGrid_0 + longGrid_1 + latGrid_0 + latGrid_1;
 	//grid_rgb = longGrid_0;
 	//TODO eg. vec3(0.0) as const
