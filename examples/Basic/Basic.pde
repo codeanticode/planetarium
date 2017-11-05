@@ -42,8 +42,8 @@ void setup() {
 void pre() {
   // The dome projection is centered at (0, 0), so the mouse coordinates
   // need to be offset by (width/2, height/2)
-  cubeX += ((mouseX - width * 0.5) - cubeX) * 0.2;
-  cubeY += ((mouseY - height * 0.5) - cubeY) * 0.2;
+  cubeX += ((mouseX - width * 0.5)*2 - cubeX) * 0.2;
+  cubeY += ((mouseY - height * 0.5)*2 - cubeY) * 0.2;
 }
 
 // Called five times per frame.

@@ -324,10 +324,10 @@ public class Dome extends PGraphics3D {
 			domeQuad.textureMode(NORMAL);
 			domeQuad.noStroke();
 			// TODO
-			domeQuad.vertex(-width * 0.5f, -height * 0.5f, 0, 0, 0);
-			domeQuad.vertex(width * 0.5f, -height * 0.5f, 0, 1, 0);
-			domeQuad.vertex(width * 0.5f, height * 0.5f, 0, 1, 1);
-			domeQuad.vertex(-width * 0.5f, height * 0.5f, 0, 0, 1);
+			domeQuad.vertex(-width * 0.5f, -height * 0.5f, 0, 1, 1);
+			domeQuad.vertex(width * 0.5f, -height * 0.5f, 0, 0, 1);
+			domeQuad.vertex(width * 0.5f, height * 0.5f, 0, 0, 0);
+			domeQuad.vertex(-width * 0.5f, height * 0.5f, 0, 1, 0);
 			domeQuad.endShape();
 		}
 
