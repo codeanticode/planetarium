@@ -394,7 +394,7 @@ public class Dome extends PGraphics3D {
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_POSITIVE_Z) {
 			camera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_NEGATIVE_Z) {
-			camera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+			camera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f);
 		}
 
 		scale(-1, 1, -1);
