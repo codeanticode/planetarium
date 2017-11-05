@@ -156,4 +156,15 @@ public class DomeCamera {
   public boolean getFaceDraw(int theFace) {
 	return renderer.getFaceDraw(theFace); 
   }
+  
+  /**
+   * Sets the cubemap size, i.e. the resolution of each(!) of the (potentially) 6 cameras we are rendering into. 
+   * 
+   * @param	theSize	the desired cubemap resolution. Will be rounded up to the next power of two 
+   * 				smaller than the maximum texture size supported by the graphics card.
+   * 
+   */  
+  public void setCubemapSize(int theSize) {
+	  renderer.setCubemapSize(theSize);
+  }
 }

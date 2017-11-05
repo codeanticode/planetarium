@@ -63,6 +63,7 @@ public class Dome extends PGraphics3D {
 
 	protected boolean cubeMapInit = false;
 	protected int cubeMapSize = 1024;
+	protected boolean cubeMapSizeNeedsManualSetting = true;
 
 	protected boolean renderDomeQuad = true;
 	protected int currentFace;
@@ -71,6 +72,7 @@ public class Dome extends PGraphics3D {
 	protected boolean requestedRenderDome;
 	
 	private boolean[] faceDraw = {true, true, true, true, true, false};
+	private String[] faceNames = {"X+", "X-", "Y+", "Y-", "Z+", "Z-"};
 
 	protected float domeLeft, domeRight, domeTop, domeBottom;
 	protected float domeDX, domeDY, domeDZ;
@@ -332,22 +334,25 @@ public class Dome extends PGraphics3D {
 		if (cubeMapQuadShader == null) {
 			cubeMapQuadShader = parent.loadShader("cubeMapQuadFrag.glsl", "cubeMapQuadVert.glsl");
 			cubeMapQuadShader.set("cubemap", 1);
-			setDomeAperture(1f);
+			setDomeAperture(domeAperture);
 		}
 
 		if (!cubeMapInit) {
 			PGL pgl = beginPGL();
 
-			cubeMapSize = PApplet.min(nextPowerOfTwo(resolution), maxTextureSize);
-
+			if (cubeMapSizeNeedsManualSetting) {
+				cubeMapSize = PApplet.min(nextPowerOfTwo(resolution), maxTextureSize);
+				cubeMapSizeNeedsManualSetting = false;
+			}
+			
 			cubeMapTex = IntBuffer.allocate(1);
 			pgl.genTextures(1, cubeMapTex);
 			pgl.bindTexture(PGL.TEXTURE_CUBE_MAP, cubeMapTex.get(0));
 			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_S, PGL.CLAMP_TO_EDGE);
 			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_T, PGL.CLAMP_TO_EDGE);
 			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_WRAP_R, PGL.CLAMP_TO_EDGE);
-			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MIN_FILTER, PGL.NEAREST);
-			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MAG_FILTER, PGL.NEAREST);
+			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MIN_FILTER, PGL.LINEAR);
+			pgl.texParameteri(PGL.TEXTURE_CUBE_MAP, PGL.TEXTURE_MAG_FILTER, PGL.LINEAR);
 			for (int i = PGL.TEXTURE_CUBE_MAP_POSITIVE_X; i < PGL.TEXTURE_CUBE_MAP_POSITIVE_X + 6; i++) {
 				pgl.texImage2D(i, 0, PGL.RGBA8, cubeMapSize, cubeMapSize, 0, PGL.RGBA, PGL.UNSIGNED_BYTE, null);
 			}
@@ -456,11 +461,11 @@ public class Dome extends PGraphics3D {
 		if (cubeMapQuadShader != null) {
 			try {
 				cubeMapQuadShader.set("aperture", theAperture);
-				domeAperture = theAperture;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		domeAperture = theAperture;
 	}
 
 	protected boolean getFaceDraw(int theFace) {
@@ -473,8 +478,15 @@ public class Dome extends PGraphics3D {
 	protected void setFaceDraw(int theFace, boolean doDraw) {
 		if (theFace >= 0 && theFace <= faceDraw.length) {
 			faceDraw[theFace] = doDraw;
-			System.out.println("face no. " + theFace + " rendering " + doDraw);
+			System.out.println("Face no. " + theFace + " (" + faceNames[theFace] +") rendering " + doDraw);
 		}	
+	}
+	
+	protected void setCubemapSize(int theSize) {
+		cubeMapSize = PApplet.min(nextPowerOfTwo(theSize),maxTextureSize);
+		
+		System.out.println("Setting cubemap size to: " + cubeMapSize);
+		cubeMapInit = false;
 	}
 
 	private void welcome() {
