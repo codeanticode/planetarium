@@ -92,11 +92,68 @@ public class DomeCamera {
 	  renderer.imageToForeground(theImage, x0, y0, w, h);
   }
   
+  /* TODO: figure out a way for this to work
   public void imageToBackground(PImage theImage, int x0, int y0, int w, int h) {
 	  renderer.imageToBackground(theImage, x0, y0, w, h);
   }
+  */
   
+  
+  /**
+   * Returns the currently rendered face index.
+   * 
+   * @return		0 == DomeCamera.POSITIVE_X
+   * 			1 == DomeCamera.NEGATIVE_X
+   *   			2 == DomeCamera.POSITIVE_Y
+   * 			3 == DomeCamera.NEGATIVE_Y
+   *       		4 == DomeCamera.POSITIVE_Z
+   * 			5 == DomeCamera.NEGATIVE_Z
+   */  
   public int getFace() {
     return renderer.getCurrentFace() - PGL.TEXTURE_CUBE_MAP_POSITIVE_X;
+  }
+  
+  /**
+   * Toggles the rendering into a cubemap face by index.
+   * 
+   * @param	theFace	0 == DomeCamera.POSITIVE_X
+   * 				1 == DomeCamera.NEGATIVE_X
+   *   				2 == DomeCamera.POSITIVE_Y
+   * 				3 == DomeCamera.NEGATIVE_Y
+   *       			4 == DomeCamera.POSITIVE_Z
+   * 				5 == DomeCamera.NEGATIVE_Z
+   */  
+  public void toggleFaceDraw(int theFace) {
+	  renderer.setFaceDraw(theFace, !renderer.getFaceDraw(theFace));
+  }
+  
+  /**
+   * Sets the rendering into a cubemap face by index.
+   * 
+   * @param	theFace	0 == DomeCamera.POSITIVE_X
+   * 				1 == DomeCamera.NEGATIVE_X
+   *   				2 == DomeCamera.POSITIVE_Y
+   * 				3 == DomeCamera.NEGATIVE_Y
+   *       			4 == DomeCamera.POSITIVE_Z
+   * 				5 == DomeCamera.NEGATIVE_Z
+   * @param doDraw	true or false
+   */  
+  public void setFaceDraw(int theFace, boolean doDraw) {
+	  renderer.setFaceDraw(theFace, doDraw);
+  }
+  
+  /**
+   * Informs if a given face is being rendered into.
+   * 
+   * @param	theFace	0 == DomeCamera.POSITIVE_X
+   * 				1 == DomeCamera.NEGATIVE_X
+   *   				2 == DomeCamera.POSITIVE_Y
+   * 				3 == DomeCamera.NEGATIVE_Y
+   *       			4 == DomeCamera.POSITIVE_Z
+   * 				5 == DomeCamera.NEGATIVE_Z
+   * @return 		true if the given camera is being updated.
+   */   
+  public boolean getFaceDraw(int theFace) {
+	return renderer.getFaceDraw(theFace); 
   }
 }

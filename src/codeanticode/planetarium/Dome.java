@@ -69,6 +69,8 @@ public class Dome extends PGraphics3D {
 
 	protected boolean requestedRenderDomeChange = false;
 	protected boolean requestedRenderDome;
+	
+	private boolean[] faceDraw = {true, true, true, true, true, false};
 
 	protected float domeLeft, domeRight, domeTop, domeBottom;
 	protected float domeDX, domeDY, domeDZ;
@@ -210,7 +212,9 @@ public class Dome extends PGraphics3D {
 			pgl.viewport(0, 0, cubeMapSize, cubeMapSize);
 			super.perspective(90.0f * DEG_TO_RAD, 1.0f, 1.0f, cameraFar);
 
-			beginFaceDraw(PGL.TEXTURE_CUBE_MAP_POSITIVE_X);
+			if (getFaceDraw(DomeCamera.POSITIVE_X)) {
+				beginFaceDraw(PGL.TEXTURE_CUBE_MAP_POSITIVE_X);
+			}
 		}
 	}
 
@@ -220,10 +224,12 @@ public class Dome extends PGraphics3D {
 			endFaceDraw();
 
 			// Draw the rest of the cubemap faces
-			for (int face = PGL.TEXTURE_CUBE_MAP_NEGATIVE_X; face <= PGL.TEXTURE_CUBE_MAP_POSITIVE_Z; face++) {
-				beginFaceDraw(face);
-				parent.draw();
-				endFaceDraw();
+			for (int face = PGL.TEXTURE_CUBE_MAP_NEGATIVE_X; face <= PGL.TEXTURE_CUBE_MAP_NEGATIVE_Z; face++) {
+				if (getFaceDraw(face - PGL.TEXTURE_CUBE_MAP_POSITIVE_X)) {
+					beginFaceDraw(face);
+					parent.draw();
+					endFaceDraw();
+				}
 			}
 
 			endPGL();
@@ -455,6 +461,20 @@ public class Dome extends PGraphics3D {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	protected boolean getFaceDraw(int theFace) {
+		if (theFace >= 0 && theFace <= faceDraw.length) {
+			return faceDraw[theFace];
+		}
+		return false;
+	}
+	
+	protected void setFaceDraw(int theFace, boolean doDraw) {
+		if (theFace >= 0 && theFace <= faceDraw.length) {
+			faceDraw[theFace] = doDraw;
+			System.out.println("face no. " + theFace + " rendering " + doDraw);
+		}	
 	}
 
 	private void welcome() {
