@@ -13,7 +13,7 @@ class Sun {
     location = new PVector(0,0);
     mass = 20;
     G = 0.4;
-    sphere = createShape(SPHERE, mass*2, 20);
+    sphere = createShape(SPHERE, mass*2);
     sphere.setFill(false);
     sphere.setStroke(color(255));
   }

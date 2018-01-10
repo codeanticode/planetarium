@@ -17,7 +17,7 @@ class Planet {
     location = new PVector(x,y,z);
     velocity = new PVector(1,0);   // Arbitrary starting velocity
     acceleration = new PVector(0,0);    
-    sphere = createShape(SPHERE, mass*8, 20);
+    sphere = createShape(SPHERE, mass*8);
     sphere.setStroke(false);
     sphere.setFill(color(255));
   }
