@@ -191,8 +191,8 @@ public class Dome extends PGraphics3D {
 				background(0xffCCCCCC);
 			} else {
 				// go back to default camera and perspective
-				perspective();
-				camera();
+			  domePerspective();
+				domeCamera();
 				currentFace = PGL.TEXTURE_CUBE_MAP_POSITIVE_Z; // Current face simply defaults to POSITIVE_Z
 			}
 			requestedRenderDomeChange = false;
@@ -212,7 +212,7 @@ public class Dome extends PGraphics3D {
 			pgl.bindFramebuffer(PGL.FRAMEBUFFER, cubeMapFbo.get(0));
 
 			pgl.viewport(0, 0, cubeMapSize, cubeMapSize);
-			super.perspective(90.0f * DEG_TO_RAD, 1.0f, 1.0f, cameraFar);
+			domePerspective(90.0f * DEG_TO_RAD, 1.0f, 1.0f, cameraFar);
 
 			if (getFaceDraw(DomeCamera.POSITIVE_X)) {
 				beginFaceDraw(PGL.TEXTURE_CUBE_MAP_POSITIVE_X);
@@ -384,17 +384,17 @@ public class Dome extends PGraphics3D {
 		resetMatrix();
 
 		if (currentFace == PGL.TEXTURE_CUBE_MAP_POSITIVE_X) {
-			camera(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_NEGATIVE_X) {
-			camera(0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_POSITIVE_Y) {
-			camera(0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_NEGATIVE_Y) {
-			camera(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_POSITIVE_Z) {
-			camera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f);
 		} else if (currentFace == PGL.TEXTURE_CUBE_MAP_NEGATIVE_Z) {
-			camera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f);
+		  domeCamera(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f);
 		}
 
 		scale(-1, 1, -1);
@@ -413,8 +413,8 @@ public class Dome extends PGraphics3D {
 		renderBorder();
 
 		// This setting might be better for 2.1.2+:
-		camera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
-		ortho(-width / 2, width / 2, -height / 2, height / 2);
+		domeCamera(0, 0, resolution * 0.5f, 0, 0, 0, 0, 1, 0);
+		domeOrtho(-width / 2, width / 2, -height / 2, height / 2);
 		// ortho(-width, 0, -height, 0);
 		/*
 		 * camera(); ortho(domeLeft, domeRight, domeBottom, domeTop);
@@ -492,4 +492,37 @@ public class Dome extends PGraphics3D {
 	private void welcome() {
 		System.out.println("##library.name## ##library.prettyVersion## by ##author##");
 	}
+
+	private void domeCamera() {
+	  domeCamera(defCameraX, defCameraY, defCameraZ, defCameraX, defCameraY,
+               0, 0, 1, 0);
+	}
+	
+	private void domeCamera(float eyeX, float eyeY, float eyeZ,
+      float centerX, float centerY, float centerZ,
+      float upX, float upY, float upZ) {
+	  super.camera(eyeX, eyeY, eyeZ, centerX, centerY, centerZ,
+	      upX, upY, upZ);
+	  
+	}
+	
+  private void domePerspective() {
+    domePerspective(defCameraFOV, defCameraAspect, defCameraNear, defCameraFar);
+  }
+
+	
+  private void domePerspective(float fov, float aspect, float zNear, float zFar) {
+    super.perspective(fov, aspect, zNear, zFar);
+  }
+  
+  private void domeOrtho(float left, float right,
+                     float bottom, float top) {
+    domeOrtho(left, right, bottom, top, 0, eyeDist * 10);
+  }  
+  
+  private void domeOrtho(float left, float right,
+      float bottom, float top,
+      float near, float far) {
+    super.ortho(left, right, bottom, top, near, far);
+  }   
 }
